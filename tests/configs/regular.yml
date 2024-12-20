@@ -1,0 +1,42 @@
+num_int: 10
+num_float: 1.23
+string: "'This is a string.'"
+list:
+  - 1
+  - 1.1
+  - num_int
+  - num_float
+  - sub_dict:
+      num_int: 20
+      num_float: 2.34
+tuple: >
+  (
+    1,
+    1.1,
+    num_int,
+    num_float,
+    {
+      'sub_dict': {
+        'num_int': 20,
+        'num_float': 2.34,
+      }
+    }
+  )
+datetime_object:
+  module: datetime
+  name: datetime
+  kwargs:
+    year: 2024
+    month: 12
+    day: 24
+    hour: 12
+    minute: 12
+    second: 12
+date_object: date(2024, 12, 24)
+dt_object: dt.MINYEAR
+
+extralibs:
+  dt: datetime
+  date:
+    module: datetime
+    name: date

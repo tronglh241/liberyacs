@@ -1,0 +1,44 @@
+[build-system]
+requires = [
+    "setuptools>=61.0.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+version = "0.1.0"
+name = "liberyacs"
+description = "A Python library to dynamically evaluate YAML configs to Python objects."
+authors = [
+    {name = "Trong Le Huu", email = "tronglh.241@gmail.com"}
+]
+readme = "README.md"
+keywords = ["yaml", "yacs"  , "dynamic", "configuration"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Utilities"
+]
+dependencies = [
+    "yacs>=0.1.8",
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/tronglh241/liberyacs"
+Documentation = "https://github.com/tronglh241/liberyacs"
+
+[tool.mypy]
+python_version = 3.8
+check_untyped_defs = true
+disallow_untyped_defs = true
+strict_optional = true
+warn_unused_ignores = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = [
+    "yacs.config",
+]
+ignore_missing_imports = true

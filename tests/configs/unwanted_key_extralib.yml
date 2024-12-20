@@ -1,0 +1,6 @@
+now: datetime.now()
+extralibs:
+  datetime:
+    module: datetime
+    name: datetime
+    alias: dt
