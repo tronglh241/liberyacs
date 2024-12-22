@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from importlib import import_module
 from pathlib import Path
-from typing import Any, List, Sequence, Union
+from typing import Any, Union
 
 from yacs.config import CfgNode as _CfgNode
 
@@ -36,7 +36,7 @@ class CfgNode(_CfgNode):
         return config
 
     @classmethod
-    def _convert_to_cfg_node(cls, data: Any) -> Union[CfgNode, List[Any], Any]:
+    def _convert_to_cfg_node(cls, data: Any) -> Any:
         if isinstance(data, dict):
             # Convert dictionary to CfgNode and recursively process each item
             cfg_node = cls()
@@ -66,6 +66,8 @@ class CfgNode(_CfgNode):
 
         config = CfgNode._eval(config, extralibs, org_config)
 
+        return config
+
     @staticmethod
     def _eval(config: Any, global_context: dict, local_context: dict) -> Any:
         if isinstance(config, dict):
@@ -78,10 +80,10 @@ class CfgNode(_CfgNode):
             if module is not None and name is not None:
                 kwargs = config.pop(KWARGS, {})
                 config = eval(name, {}, vars(import_module(module)))(**kwargs)
-            elif not isinstance(CfgNode):
+            elif not isinstance(config, CfgNode):
                 config = CfgNode(config)
 
-        elif isinstance(config, Sequence):
+        elif isinstance(config, (list, tuple)):
             config = type(config)(map(lambda ele: CfgNode._eval(ele, global_context, local_context), config))
 
         elif isinstance(config, str):
