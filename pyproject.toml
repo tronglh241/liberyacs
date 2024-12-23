@@ -1,9 +1,11 @@
 [build-system]
-requires = ["setuptools"]
+requires = [
+    "setuptools>=61.0.0",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
-dynamic = ["version"]
+version = "0.1.0"
 name = "liberyacs"
 description = "A Python library to dynamically evaluate YAML configs to Python objects."
 authors = [
@@ -24,9 +26,6 @@ dependencies = [
 ]
 requires-python = ">=3.8"
 
-[tool.setuptools.dynamic]
-version = {attr = "liberyacs.__version__"}
-
 [project.urls]
 Homepage = "https://github.com/tronglh241/liberyacs"
 Documentation = "https://github.com/tronglh241/liberyacs"
@@ -37,6 +36,7 @@ check_untyped_defs = true
 disallow_untyped_defs = true
 strict_optional = true
 warn_unused_ignores = true
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = [
