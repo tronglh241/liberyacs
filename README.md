@@ -1,10 +1,10 @@
-# Liberyacs
+# liberyacs
 
-Liberyacs is a Python library based on `yacs`, designed to enhance YAML configuration handling by supporting dynamic evaluation of values into Python objects, literals, and more. It provides developers with the freedom to define sophisticated configurations that integrate seamlessly with Python code.
+`liberyacs` is a Python library based on `yacs`, designed to enhance YAML configuration handling by supporting dynamic evaluation of values into Python objects, literals, and more. It provides developers with the freedom to define sophisticated configurations that integrate seamlessly with Python code.
 
 ## Installation
 
-You can install Liberyacs via pip from PyPI or directly from the Git repository:
+You can install `liberyacs` via pip from PyPI or directly from the Git repository:
 
 ```bash
 pip install liberyacs
@@ -13,7 +13,7 @@ pip install liberyacs
 Or, if installing from Git:
 
 ```bash
-pip install git+https://github.com/yourusername/liberyacs.git
+pip install git+https://github.com/tronglh241/liberyacs.git
 ```
 
 ## Usage
@@ -139,5 +139,5 @@ config = CfgNode.load(filepath, evaluate=False)
 
 ---
 
-With Liberyacs, you can unlock the full potential of dynamic configuration management in Python. Simplify your workflows, reduce boilerplate, and gain unparalleled flexibility in defining configurations for your projects!
+With liberyacs, you can unlock the full potential of dynamic configuration management in Python. Simplify your workflows, reduce boilerplate, and gain unparalleled flexibility in defining configurations for your projects!
 
