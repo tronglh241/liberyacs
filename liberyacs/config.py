@@ -141,6 +141,6 @@ class CfgNode(_CfgNode):
 
             # If the result is not a string, evaluate it further
             if not isinstance(config, str):
-                CfgNode._eval(config, global_context, local_context)
+                config = CfgNode._eval(config, global_context, local_context)
 
         return config
