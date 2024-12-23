@@ -22,5 +22,21 @@ tuple: >
       }
     }
   )
-object:
-  _module_
+datetime_object:
+  _module_: datetime
+  _name_: datetime
+  _kwargs_:
+    year: 2024
+    month: 12
+    day: 24
+    hour: 12
+    minute: 12
+    second: 12
+date_object: date(2024, 12, 24)
+dt_object: dt.MINYEAR
+
+_extralibs_:
+  dt: datetime
+  date:
+    _module_: datetime
+    _name_: date
