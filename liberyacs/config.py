@@ -7,10 +7,10 @@ from typing import Any, Union
 from yacs.config import CfgNode as _CfgNode
 
 # Special keys used for dynamic configuration evaluation
-EXTRALIBS = '_extralibs_'
-MODULE = '_module_'
-NAME = '_name_'
-KWARGS = '_kwargs_'
+EXTRALIBS = 'extralibs'
+MODULE = 'module'
+NAME = 'name'
+KWARGS = 'kwargs'
 
 
 class CfgNode(_CfgNode):
@@ -87,8 +87,18 @@ class CfgNode(_CfgNode):
         for alias, lib_info in config.pop(EXTRALIBS, {}).items():
             if isinstance(lib_info, dict):
                 # Import a specific object from a module
-                module = lib_info[MODULE]
-                name = lib_info[NAME]
+                module = lib_info.pop(MODULE)
+                name = lib_info.pop(NAME)
+
+                if module is None or name is None:
+                    raise ValueError(
+                        f'`{MODULE}` and `{NAME}` must be both specified in `{EXTRALIBS}`, '
+                        f'found {MODULE}: {module}, {NAME}: {name}.'
+                    )
+
+                if lib_info:
+                    raise ValueError(f'Only {MODULE} and {NAME} are allowed, found {[key for key in lib_info.keys()]}.')
+
                 lib = getattr(import_module(module), name)
             else:
                 # Import the entire module
@@ -115,16 +125,22 @@ class CfgNode(_CfgNode):
             Any: Evaluated configuration object.
         '''
         if isinstance(config, dict):
-            # Process dictionary configuration items
-            module = config.pop(MODULE, None)
-            name = config.pop(NAME, None)
+            initialized = (
+                len(config) == 2 and MODULE in config and NAME in config
+                or len(config) == 3 and MODULE in config and NAME in config and KWARGS in config
+            )
+
+            if initialized:
+                # Process dictionary configuration items
+                module = config.pop(MODULE, None)
+                name = config.pop(NAME, None)
 
             # Recursively evaluate dictionary values
             for key, value in config.items():
                 config[key] = CfgNode._eval(value, global_context, local_context)
 
             # If both module and name are specified, construct the object with kwargs
-            if module is not None and name is not None:
+            if initialized:
                 kwargs = config.pop(KWARGS, {})  # Extract arguments for the callable
                 config = eval(name, {}, vars(import_module(module)))(**kwargs)
             elif not isinstance(config, CfgNode):
