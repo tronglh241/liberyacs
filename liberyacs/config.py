@@ -87,8 +87,8 @@ class CfgNode(_CfgNode):
         for alias, lib_info in config.pop(EXTRALIBS, {}).items():
             if isinstance(lib_info, dict):
                 # Import a specific object from a module
-                module = lib_info.pop(MODULE)
-                name = lib_info.pop(NAME)
+                module = lib_info.pop(MODULE, None)
+                name = lib_info.pop(NAME, None)
 
                 if module is None or name is None:
                     raise ValueError(

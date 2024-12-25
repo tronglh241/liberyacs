@@ -9,7 +9,7 @@ class FileNotFoundCase(Case):
     config_file = 'tests/configs/nonexist_file.yml'
     evaluate = True
 
-    def check(self):
+    def check(self) -> None:
         with pytest.raises(FileNotFoundError):
             self.load_config()
 
@@ -18,7 +18,7 @@ class RegularCase(Case):
     config_file = 'tests/configs/regular.yml'
     evaluate = True
 
-    def check(self):
+    def check(self) -> None:
         config = self.load_config()
 
         assert config.num_int == 10
@@ -47,7 +47,7 @@ class NotEvalCase(Case):
     config_file = 'tests/configs/not_eval.yml'
     evaluate = False
 
-    def check(self):
+    def check(self) -> None:
         config = self.load_config()
 
         assert config.num_int == 10
@@ -57,3 +57,27 @@ class NotEvalCase(Case):
         assert config.list[:4] == [1, 1.1, 'num_int', 'num_float']
         assert config.list[4].sub_dict.num_int == 20
         assert config.list[4].sub_dict.num_float == 2.34
+
+
+class LackOfKeyExtralibCase(Case):
+    config_file = 'tests/configs/lack_of_key_extralib.yml'
+    evaluate = True
+
+    def check(self) -> None:
+        with pytest.raises(
+            ValueError,
+            match='.* and .* must be both specified in',
+        ):
+            self.load_config()
+
+
+class UnwantedKeyExtralibCase(Case):
+    config_file = 'tests/configs/unwanted_key_extralib.yml'
+    evaluate = True
+
+    def check(self) -> None:
+        with pytest.raises(
+            ValueError,
+            match='Only .* and .* are allowed',
+        ):
+            self.load_config()
