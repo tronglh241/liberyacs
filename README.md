@@ -38,6 +38,71 @@ config = CfgNode.load(filepath, evaluate=True)
 config = CfgNode.load(filepath, evaluate=False)
 ```
 
+## Examples
+
+### Prediction on MNIST Dataset
+
+Using `liberyacs` to configure a basic prediction pipeline on the MNIST dataset with MobileNetV2 from the `torchvision` library. This serves as a straightforward demonstration of how `liberyacs` can be utilized.
+
+#### Configuration File: `config.yml`
+
+```yaml
+model:
+  module: torchvision.models
+  name: mobilenet_v2
+
+data:
+  module: torch.utils.data
+  name: DataLoader
+  kwargs:
+    dataset:
+      module: torchvision.datasets
+      name: MNIST
+      kwargs:
+        root: "'data/'"
+        train: False
+        download: True
+        transform: 'transforms.Compose([
+          transforms.ToTensor(),
+          transforms.Normalize((0.1307,), (0.3081,)),
+          transforms.Lambda(lambda x: x.repeat(3, 1, 1)),
+        ])'
+    shuffle: False
+    batch_size: 16
+
+extralibs:
+  transforms: torchvision.transforms
+```
+
+#### Prediction Script: `predict.py`
+
+```python
+import torch
+from liberyacs import CfgNode
+
+# Load configuration
+config = CfgNode.load('config.yml', evaluate=True)
+
+# Load model and data
+model = config.model
+mnist_data = config.data
+
+# Perform predictions
+with torch.no_grad():
+    images, _ = next(iter(mnist_data))
+    outputs = model(images)
+    predictions = torch.argmax(outputs, dim=1)
+    print(f'Predictions: {predictions.tolist()}')
+```
+
+#### Running the Script
+
+To execute the script, use the following command:
+
+```bash
+python predict.py
+```
+
 ## Evaluation Principles
 
 ### String Evaluation
@@ -140,63 +205,6 @@ config = CfgNode.load(filepath, evaluate=False)
     - `level_one` will resolve to `20` (10 \* 2), and `level_two` will resolve to `25` (20 + 5).
 
 - **Depth-First Evaluation:** This ensures that dependencies like `base_value` and `level_one` are fully resolved before `level_two` is evaluated, enabling robust and reliable configurations.
-
-## Examples
-
-### Prediction on MNIST Dataset
-
-Using `liberyacs` to configure a basic prediction pipeline on the MNIST dataset with MobileNetV2 from the `torchvision` library. This serves as a straightforward demonstration of how `liberyacs` can be utilized.
-
-#### YAML Configuration
-
-```yaml
-model:
-  module: torchvision.models
-  name: mobilenet_v2
-
-data:
-  module: torch.utils.data
-  name: DataLoader
-  kwargs:
-    dataset:
-      module: torchvision.datasets
-      name: MNIST
-      kwargs:
-        root: "'data/'"
-        train: False
-        download: True
-        transform: 'transforms.Compose([
-          transforms.ToTensor(),
-          transforms.Normalize((0.1307,), (0.3081,)),
-          transforms.Lambda(lambda x: x.repeat(3, 1, 1)),
-        ])'
-    shuffle: False
-    batch_size: 16
-
-extralibs:
-  transforms: torchvision.transforms
-```
-
-#### Python Code
-
-```python
-import torch
-from liberyacs import CfgNode
-
-# Load configuration
-config = CfgNode.load('config.yml', evaluate=True)
-
-# Load model and data
-model = config.model
-mnist_data = config.data
-
-with torch.no_grad():
-    # Run predictions
-    images, _ = next(iter(mnist_data))
-    outputs = model(images)
-    predictions = torch.argmax(outputs, dim=1)
-    print(predictions)
-```
 
 ---
 
