@@ -43,7 +43,6 @@ config = CfgNode.load(filepath, evaluate=False)
 ### String Evaluation
 
 - **String values are evaluated once.**
-
   - Example:
     ```yaml
     first_str: "'print'"
@@ -53,7 +52,6 @@ config = CfgNode.load(filepath, evaluate=False)
     - `second_str`'s value will be the `print` function.
 
 - **If a string evaluates to a non-string, it will be further evaluated.**
-
   - Example:
     ```yaml
     tuple: (1, 1.2, "'word'")
@@ -63,7 +61,6 @@ config = CfgNode.load(filepath, evaluate=False)
 ### Dictionary and Object Evaluation
 
 - **Dictionary values are converted to `CfgNode` objects.**
-
   - Example:
     ```yaml
     video:
@@ -72,11 +69,8 @@ config = CfgNode.load(filepath, evaluate=False)
     - You can access `path`'s value using either `config.video.path` or `config.video['path']`.
 
 - **When a dictionary contains exactly `module` and `name`:**
-
   - It will be evaluated into a Python object using the provided arguments in `kwargs`.
-
   - If `kwargs` is not provided, the object is created using its default constructor, without any arguments.
-
   - Example:
     ```yaml
     date:
@@ -87,29 +81,23 @@ config = CfgNode.load(filepath, evaluate=False)
         month: 12
         day: 24
     ```
-
     - Equivalent to:
       ```python
       from datetime import datetime
 
       config.date = datetime(year=2024, month=12, day=24)
       ```
-
   - **Default Constructor Behavior:**
-
     ```yaml
     empty_list:
       module: builtins
       name: list
     ```
-
     - Equivalent to:
       ```python
       config.empty_list = list()
       ```
-
 - **When a dictionary does not contain both `module` and `name`:**
-
   - It will be treated as an ordinary dictionary and no evaluation into a Python object will occur.
 
 ### Lists and Tuples Evaluation
@@ -119,7 +107,6 @@ config = CfgNode.load(filepath, evaluate=False)
 ### Importing Extra Libraries
 
 - You can specify additional libraries for evaluation using the `extralibs` field.
-
   - Example:
     ```yaml
     numpy_pi: np.pi
@@ -144,7 +131,6 @@ config = CfgNode.load(filepath, evaluate=False)
 ### Self-Referencing Values
 
 - **Self-Referencing:** Values can reference other values in the configuration, provided the referenced value is already defined.
-
   - Example:
     ```yaml
     base_value: 10
@@ -159,7 +145,7 @@ config = CfgNode.load(filepath, evaluate=False)
 
 ### Prediction on MNIST Dataset
 
-Using `liberyacs` for configuring a simple prediction pipeline on the MNIST dataset with MobileNetV2 from the `torchvision` library:
+Using `liberyacs` to configure a basic prediction pipeline on the MNIST dataset with MobileNetV2 from the `torchvision` library. This serves as a straightforward demonstration of how `liberyacs` can be utilized.
 
 #### YAML Configuration
 
