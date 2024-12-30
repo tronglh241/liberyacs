@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import copy
 from importlib import import_module
 from pathlib import Path
 from typing import Any, Union
 
+import yaml
+from yacs.config import _VALID_TYPES
 from yacs.config import CfgNode as _CfgNode
+from yacs.config import _assert_with_logging, _valid_type
 
 # Special keys used for dynamic configuration evaluation
 EXTRALIBS = 'extralibs'
@@ -72,6 +76,62 @@ class CfgNode(_CfgNode):
         else:
             # Return the data unchanged if it is not a dict or list
             return data
+
+    @classmethod
+    def _create_config_tree_from_dict(cls, dic: dict, key_list: list) -> dict:
+        '''
+        Create a configuration tree using the given dict.
+        Any dict-like objects inside dict will be treated as a new CfgNode.
+
+        Args:
+            dic (dict):
+            key_list (list[str]): a list of names which index this CfgNode from the root.
+                Currently only used for logging purposes.
+        '''
+        dic = copy.deepcopy(dic)
+        for k, v in dic.items():
+            if isinstance(v, dict):
+                # Convert dict to CfgNode
+                dic[k] = cls(v, key_list=key_list + [k])
+            elif isinstance(v, (list, tuple)):
+                dic[k] = type(v)(cls(ele) for ele in v)
+        return dic
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if self.is_frozen():
+            raise AttributeError(
+                'Attempted to set {} to {}, but CfgNode is immutable'.format(
+                    name, value
+                )
+            )
+
+        _assert_with_logging(
+            name not in self.__dict__,
+            'Invalid attempt to modify internal CfgNode state: {}'.format(name),
+        )
+
+        self[name] = value
+
+    def dump(self, **kwargs: Any) -> str:
+        '''Dump to a string.'''
+
+        def convert_to_dict(cfg_node: Any, key_list: list) -> Any:
+            if not isinstance(cfg_node, CfgNode):
+                _assert_with_logging(
+                    _valid_type(cfg_node),
+                    'Key {} with value {} is not a valid type to dump; valid types: {}'.format(
+                        '.'.join(key_list), type(cfg_node), _VALID_TYPES
+                    ),
+                )
+                return cfg_node
+            else:
+                cfg_dict = dict(cfg_node)
+                for k, v in cfg_dict.items():
+                    cfg_dict[k] = convert_to_dict(v, key_list + [k])
+                return cfg_dict
+
+        self_as_dict = convert_to_dict(self, [])
+        return yaml.safe_dump(self_as_dict, **kwargs)
 
     def eval(self) -> CfgNode:
         '''
