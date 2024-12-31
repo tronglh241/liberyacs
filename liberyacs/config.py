@@ -94,7 +94,7 @@ class CfgNode(_CfgNode):
                 # Convert dict to CfgNode
                 dic[k] = cls(v, key_list=key_list + [k])
             elif isinstance(v, (list, tuple)):
-                dic[k] = type(v)(cls(ele) for ele in v)
+                dic[k] = type(v)(cls(ele) if isinstance(ele, dict) else ele for ele in v)
         return dic
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -110,7 +110,7 @@ class CfgNode(_CfgNode):
             'Invalid attempt to modify internal CfgNode state: {}'.format(name),
         )
 
-        self[name] = value
+        self[name] = self._convert_to_cfg_node(value)
 
     def dump(self, **kwargs: Any) -> str:
         '''Dump to a string.'''
